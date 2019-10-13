@@ -73,7 +73,6 @@ if __name__ == '__main__':
             feature["25%"] = get_quartile(sorted_array, q)
         q = (feature["Count"] - 1) * 0.5
         if int(q) == q:
-            print("je suis rrentre")
             feature["50%"] = sorted_array[int(q)]
         else:
             feature["50%"] = get_quartile(sorted_array, q)
