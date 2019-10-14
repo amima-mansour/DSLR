@@ -3,25 +3,26 @@ import numpy as np
 import math
 import csv
 
-def get_column_data(vector):
-    c, s, max_column, min_column = 0, 0, vector[0], vector[0]
+def get_column_data(vector, name):
+    c, s, max_column, min_column, res = 0, 0, vector[0], vector[0], []
     for x in vector:
         s += x
-        if x != 0:
+        if x != 0 or name == "Index":
             c += 1
+            res.append(x)
         if max_column < x:
             max_column = x
         if min_column > x:
             min_column = x
-    return c, s, max_column, min_column
+    return c, s, max_column, min_column, res
 
-def get_std(vector, mean, count):
+def get_std(vector, mean, count, name):
     std = 0
     for v in vector:
-        if v != 0:
+        if v != 0 or name == "Index":
             std += (v - mean) ** 2
     std /= (count - 1)
-    return (std ** 0.5)
+    return (math.sqrt(std))
 
 def get_quartile(sorted_array, q):
     if q - int(q) == 0.25:
@@ -54,18 +55,18 @@ if __name__ == '__main__':
             data.append(l)
     empty_cell(data)
     data = pd.DataFrame(data[1:], columns = data[0])
-    #print(data)
+    #print(data.describe())
     #data = pd.read_csv("resources/dataset_train.csv")
     # convert dataframe to matrix
     features = {}
-    features_name = ["Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
-    for i in range(13):
+    features_name = ["Index", "Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
+    for i in range(14):
         feature = {}
-        feature["Count"], sum_column, max_column, min_column = get_column_data(data[features_name[i]])
+        feature["Count"], sum_column, max_column, min_column, vector = get_column_data(data[features_name[i]], features_name[i])
         feature["Mean"] = np.float32(sum_column / feature["Count"])
-        feature["Std"] = get_std(data[features_name[i]], feature["Mean"], feature["Count"])
+        feature["Std"] = get_std(data[features_name[i]], feature["Mean"], feature["Count"], features_name[i])
         feature["Min"] = min_column
-        sorted_array = np.sort(data[features_name[i]])
+        sorted_array = sorted(vector)
         q = (feature["Count"] - 1) * 0.25
         if int(q) == q:
             feature["25%"] = sorted_array[int(q)]
@@ -76,7 +77,7 @@ if __name__ == '__main__':
             feature["50%"] = sorted_array[int(q)]
         else:
             feature["50%"] = get_quartile(sorted_array, q)
-        q = (feature["Count"] -  1) * 0.75
+        q = (feature["Count"] - 1) * 0.75
         if int(q) == q:
             feature["75%"] = sorted_array[int(q)]
         else:
