@@ -3,24 +3,25 @@ import numpy as np
 import math
 import csv
 import sys
+import tools
 
 def get_column_data(vector, name):
     c, s, max_column, min_column, res = 0, 0, vector[0], vector[0], []
     for x in vector:
-        s += x
-        if x != 0 or name == "Index":
+        if not np.isnan(x) or name == "Index":
             c += 1
+            s += x
             res.append(x)
-        if max_column < x:
-            max_column = x
-        if min_column > x:
-            min_column = x
+            if max_column < x:
+                max_column = x
+            if min_column > x:
+                min_column = x
     return c, s, max_column, min_column, res
 
 def get_std(vector, mean, count, name):
     std = 0
     for v in vector:
-        if v != 0 or name == "Index":
+        if not np.isnan(v) or name == "Index":
             std += (v - mean) ** 2
     std /= (count - 1)
     return (math.sqrt(std))
@@ -32,31 +33,14 @@ def get_quartile(sorted_array, q):
         return (sorted_array[math.ceil(q)] + sorted_array[math.floor(q)]) / 2
     return (sorted_array[math.ceil(q)] * 3 + sorted_array[math.floor(q)]) / 4
 
-def empty_cell(data):
-    for line in data:
-        for i,element in enumerate(line):
-            if len(element) == 0:
-                line[i] = 0
-            try:
-                line[i] = float(element)
-            except:
-                continue
-
 if __name__ == '__main__':
     # Read data from file 'filename.csv'
-    data = []
     try:
         with open(sys.argv[1], 'r') as csvfile:
-            datareader = csv.reader(csvfile, delimiter = '\t')
-            for row in datareader:
-                l = row[0].split(',')
-                data.append(l)
-
+            data = tools.read_file(csvfile)   
     except:
         print("Usage: python3 describe resources/dataset_train.csv")
         exit (-1)
-    empty_cell(data)
-    data = pd.DataFrame(data[1:], columns = data[0])
     features = {}
     features_name = ["Index", "Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
     for i in range(14):
