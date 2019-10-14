@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import math
 import csv
+import sys
 
 def get_column_data(vector, name):
     c, s, max_column, min_column, res = 0, 0, vector[0], vector[0], []
@@ -31,10 +32,6 @@ def get_quartile(sorted_array, q):
         return (sorted_array[math.ceil(q)] + sorted_array[math.floor(q)]) / 2
     return (sorted_array[math.ceil(q)] * 3 + sorted_array[math.floor(q)]) / 4
 
-
-def print_features(features):
-    print(pd.DataFrame.from_dict(features))
-
 def empty_cell(data):
     for line in data:
         for i,element in enumerate(line):
@@ -48,16 +45,18 @@ def empty_cell(data):
 if __name__ == '__main__':
     # Read data from file 'filename.csv'
     data = []
-    with open('resources/dataset_train.csv', 'r') as csvfile:
-        datareader = csv.reader(csvfile, delimiter = '\t')
-        for row in datareader:
-            l = row[0].split(',')
-            data.append(l)
+    try:
+        with open(sys.argv[1], 'r') as csvfile:
+            datareader = csv.reader(csvfile, delimiter = '\t')
+            for row in datareader:
+                l = row[0].split(',')
+                data.append(l)
+
+    except:
+        print("Usage: python3 describe resources/dataset_train.csv")
+        exit (-1)
     empty_cell(data)
     data = pd.DataFrame(data[1:], columns = data[0])
-    #print(data.describe())
-    #data = pd.read_csv("resources/dataset_train.csv")
-    # convert dataframe to matrix
     features = {}
     features_name = ["Index", "Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
     for i in range(14):
@@ -84,4 +83,4 @@ if __name__ == '__main__':
             feature["75%"] = get_quartile(sorted_array, q)
         feature["Max"] = max_column
         features[features_name[i]] = feature
-    print_features(features)
+    print(pd.DataFrame.from_dict(features))
