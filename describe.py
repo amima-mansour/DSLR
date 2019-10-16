@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
-import csv
 import sys
-import tools
 
 def get_column_data(vector, name):
     c, s, max_column, min_column, res = 0, 0, vector[0], vector[0], []
@@ -36,8 +34,7 @@ def get_quartile(sorted_array, q):
 if __name__ == '__main__':
     # Read data from file 'filename.csv'
     try:
-        with open(sys.argv[1], 'r') as csvfile:
-            data = tools.read_file(csvfile)   
+        data = pd.read_csv(sys.argv[1])
     except:
         print("Usage: python3 describe resources/dataset_train.csv")
         exit (-1)
