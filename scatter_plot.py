@@ -10,24 +10,23 @@ if __name__ == '__main__':
     three = df.loc[df['Hogwarts House'] == 'Gryffindor']
     four = df.loc[df['Hogwarts House'] == 'Hufflepuff']
     features_name = ["Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
-    
-    plt.xlabel('Grades')
-    plt.ylabel('Frequency of students')
-    for i in range(12):
-        fig = plt.figure(figsize=(15,15))
-        sfig.suptitle('Distribution of Students Grades for Each House', fontsize=20)
-        plt.subplot(5,3,i + 2)
-        Ravenclaw = first[features_name[i]]
-        Slytherin = second[features_name[i]]
-        Gryffindor = three[features_name[i]]
-        Hufflepuff = four[features_name[i]]
-        for j in range(i + 1, 13):
-            plt.hist(Ravenclaw, color='#00006d', label = 'Ravenclaw')
-            plt.hist(Slytherin, color='#00613e', label = 'Slytherin')
-            plt.hist(Gryffindor, color='#ae0001', label = 'Gryffindor')
-            plt.hist(Hufflepuff, color='#f0c75e', label = 'Hufflepuff')
-        plt.title(features_name[i])
-    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    fig.legend(['Ravenclaw', 'Slytherin', 'Gryffindor', 'Hufflepuff'],loc=2,fontsize=16,shadow=True,bbox_to_anchor=(0.05, 0.9))
-    plt.savefig('Histogram.png', dpi=300)
+    #for i in range(13):
+    Ravenclaw_x = first['Astronomy']
+    Slytherin_x = second['Astronomy']
+    Gryffindor_x = three['Astronomy']
+    Hufflepuff_x = four['Astronomy']
+    fig = plt.figure(figsize=(5, 5))
+        #for j in range(i + 1, 13):
+    Ravenclaw_y = first["Defense Against the Dark Arts"]
+    Slytherin_y = second["Defense Against the Dark Arts"]
+    Gryffindor_y = three["Defense Against the Dark Arts"]
+    Hufflepuff_y = four["Defense Against the Dark Arts"]
+    plt.xlabel("Astronomy")
+    plt.ylabel("Defense Against the Dark Arts")
+    plt.scatter(Ravenclaw_x, Ravenclaw_y, label = 'Ravenclaw', marker='*')
+    plt.scatter(Slytherin_x, Slytherin_y, label = 'Slytherin', marker='x')
+    plt.scatter(Gryffindor_x, Gryffindor_y, label = 'Gryffindor', marker='o')
+    plt.scatter(Hufflepuff_x, Hufflepuff_y, label = 'Hufflepuff', marker='+')
+    #plt.legend()
+    fig.tight_layout()
     plt.show()
