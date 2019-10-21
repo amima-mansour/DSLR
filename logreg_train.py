@@ -53,14 +53,13 @@ def scale_data(df):
 
 def logistic_regression(houseName, df):
     value = []
-    print(df)
     for house in df['Hogwarts House']:
         if house == houseName:
             value.append(1)
         else:
             value.append(0)
     value  = np.asarray(value)
-    del df['Hogwarts House']
+    df.drop(['Hogwarts House'], axis=1, inplace=Truse)
     "scale data"
     df = scale_data(df)
     "important ;)"
@@ -75,19 +74,16 @@ if __name__ == '__main__':
         "Read parameter file"
         df = pd.read_csv(sys.argv[1])
         "Clean data"
-        del df['Index']
-        del df['First Name']
-        del df['Last Name']
-        del df['Birthday']
-        del df['Best Hand']
+        df.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1, inplace=True)
+        print(df)
         "Apply Multi-classification with logistic regression: one-vs-all"
         theta_dic = {}
         "Data of Ravenclaw house"
-        df = df.dropna()
-        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df)
-        theta_dic['Slytherin'] = logistic_regression('Slytherin', df)
-        theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df)
-        theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df)
+        df = df.dropna(inplace=True)
+        # theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df)
+        # theta_dic['Slytherin'] = logistic_regression('Slytherin', df)
+        # theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df)
+        # theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df)
     except:
         print("Usage: python3 logreg_train.py resources/dataset_train.csv")
         exit (-1)
