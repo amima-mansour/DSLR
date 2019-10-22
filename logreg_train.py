@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def logistic_func(theta, X): 
     "logistic(sigmoid) function"
-    return 1.0 / (1 + np.exp(-np.dot(X, theta.T))) 
+    return 1.0 / (1 + np.exp(-1 * np.dot(X, theta.T))) 
 
 def log_gradient(theta, X, y): 
     "logistic gradient function"
@@ -73,11 +73,11 @@ if __name__ == '__main__':
         theta_dic = {}
         "Data of Ravenclaw house"
         df = df.dropna()
-        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df)
-        print(theta_dic)
-        # theta_dic['Slytherin'] = logistic_regression('Slytherin', df)
-        # theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df)
-        # theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df)
+        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df.copy())
+        theta_dic['Slytherin'] = logistic_regression('Slytherin', df.copy())
+        theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df.copy())
+        theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df.copy())
+        np.save("weights", theta_dic)
     except:
         print("Usage: python3 logreg_train.py resources/dataset_train.csv")
         exit (-1)
