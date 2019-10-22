@@ -25,22 +25,16 @@ def cost_func(theta, X, y):
     final = -step1 - step2
     return np.mean(final)
 
-def grad_desc(X, value, lr=.01, converge_change=1):
+def grad_desc(X, value, lr=5e-05):
     "gradient descent function"
     theta = np.matrix(np.zeros(X.shape[1])) 
-    cost = cost_func(theta, X, value)
-    change_cost = 1
-    num_iter = 1
     costs = []
-    costs.append(cost)
-    for i in range(10000):
-        old_cost = cost
-        theta = theta - (lr * log_gradient(theta, X, value))
+    for i in range(3000):
         cost = cost_func(theta, X, value)
-        change_cost = old_cost - cost 
-        num_iter += 1
+        theta = theta - (lr * log_gradient(theta, X, value))
         costs.append(cost)
-    return theta, num_iter
+    plt.plot(costs)
+    return theta
 
 def pred_values(theta, X):
     "function to predict labels"
@@ -59,12 +53,12 @@ def logistic_regression(houseName, df):
         else:
             value.append(0)
     value  = np.asarray(value)
-    df.drop(['Hogwarts House'], axis=1, inplace=Truse)
+    df.drop(['Hogwarts House'], axis=1, inplace=True)
     "scale data"
     df = scale_data(df)
     "important ;)"
     X = np.hstack((np.matrix(np.ones(df.shape[0])).T, df))
-    theta, num_iter = grad_desc(X, value)
+    theta = grad_desc(X, value)
     return theta
 
 
@@ -75,12 +69,12 @@ if __name__ == '__main__':
         df = pd.read_csv(sys.argv[1])
         "Clean data"
         df.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1, inplace=True)
-        print(df)
         "Apply Multi-classification with logistic regression: one-vs-all"
         theta_dic = {}
         "Data of Ravenclaw house"
-        df = df.dropna(inplace=True)
-        # theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df)
+        df = df.dropna()
+        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df)
+        print(theta_dic)
         # theta_dic['Slytherin'] = logistic_regression('Slytherin', df)
         # theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df)
         # theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df)
