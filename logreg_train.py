@@ -57,8 +57,7 @@ def grad_desc(X, value, lr=5e-05):
         cost = cost_func(theta, X, value)
         theta = theta - (lr * log_gradient(theta, X, value))
         costs.append(cost)
-    plt.plot(costs)
-    return theta
+    return theta.tolist()[0], costs
 
 def scale_data(df):
     return (df - df.mean()) / df.std()
@@ -77,10 +76,8 @@ def logistic_regression(houseName, df,stochastic=False):
     "important ;)"
     X = np.hstack((np.matrix(np.ones(df.shape[0])).T, df))
     if stochastic == False:
-        theta = grad_desc(X, value).tolist()[0]
-    else:
-        theta = grad_stoch(X, value)
-    return theta
+        return grad_desc(X, value)
+    return grad_stoch(X, value), []
 
 
 if __name__ == '__main__':
@@ -99,16 +96,24 @@ if __name__ == '__main__':
         theta_dic = {}
         "Data of Ravenclaw house"
         df = df.dropna()
-        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df.copy(), args.sg)
-        theta_dic['Slytherin'] = logistic_regression('Slytherin', df.copy(), args.sg)
-        theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df.copy(), args.sg)
-        theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df.copy(), args.sg)
+        theta_dic['Ravenclaw'], costs_raven = logistic_regression('Ravenclaw', df.copy(), args.sg)
+        theta_dic['Slytherin'], costs_sly = logistic_regression('Slytherin', df.copy(), args.sg)
+        theta_dic['Gryffindor'], costs_gryf = logistic_regression('Gryffindor', df.copy(), args.sg)
+        theta_dic['Hufflepuff'], costs_huff = logistic_regression('Hufflepuff', df.copy(), args.sg)
         theta = pd.DataFrame.from_dict(theta_dic)
         mean = pd.DataFrame(df.mean().tolist(), columns= ['Mean'])
         std = pd.DataFrame(df.std().tolist(), columns= ['Std'])
         mean = mean.join(std)
         theta = theta.join(mean)
         theta.to_csv('weights.csv', index = None, header=True)
+        if len(costs_raven) > 0:
+            plt.title('Cost Function')
+            plt.plot(costs_raven, color='red', label ='Ravenclaw')
+            plt.plot(costs_sly, color='blue', label='Slytherin')
+            plt.plot(costs_gryf, color='green', label='Gryffindor')
+            plt.plot(costs_huff, color='yellow', label='Hufflepuff')
+            plt.legend()
+            plt.show()
     except:
         print("Usage: python3 logreg_train.py resources/dataset_train.csv")
         exit (-1)
