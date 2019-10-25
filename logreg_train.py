@@ -29,18 +29,12 @@ def grad_desc(X, value, lr=5e-05):
     "gradient descent function"
     theta = np.matrix(np.zeros(X.shape[1])) 
     costs = []
-    for i in range(3000):
+    for i in range(100):
         cost = cost_func(theta, X, value)
         theta = theta - (lr * log_gradient(theta, X, value))
         costs.append(cost)
     plt.plot(costs)
     return theta
-
-def pred_values(theta, X):
-    "function to predict labels"
-    pred_prob = logistic_func(theta, X) 
-    pred_value = np.where(pred_prob >= .5, 1, 0) 
-    return np.squeeze(pred_value)
 
 def scale_data(df):
     return (df - df.mean()) / df.std()
@@ -68,16 +62,21 @@ if __name__ == '__main__':
         "Read parameter file"
         df = pd.read_csv(sys.argv[1])
         "Clean data"
-        df.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand'], axis=1, inplace=True)
+        df.drop(['Index', 'First Name', 'Last Name', 'Birthday', 'Best Hand', 'Astronomy', 'Transfiguration', 'Care of Magical Creatures', 'Potions'], axis=1, inplace=True)
         "Apply Multi-classification with logistic regression: one-vs-all"
         theta_dic = {}
         "Data of Ravenclaw house"
         df = df.dropna()
-        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df.copy())
-        theta_dic['Slytherin'] = logistic_regression('Slytherin', df.copy())
-        theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df.copy())
-        theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df.copy())
-        np.save("weights", theta_dic)
+        theta_dic['Ravenclaw'] = logistic_regression('Ravenclaw', df.copy()).tolist()[0]
+        theta_dic['Slytherin'] = logistic_regression('Slytherin', df.copy()).tolist()[0]
+        theta_dic['Gryffindor'] = logistic_regression('Gryffindor', df.copy()).tolist()[0]
+        theta_dic['Hufflepuff'] = logistic_regression('Hufflepuff', df.copy()).tolist()[0]
+        theta = pd.DataFrame.from_dict(theta_dic)
+        mean = pd.DataFrame(df.mean().tolist(), columns= ['Mean'])
+        std = pd.DataFrame(df.std().tolist(), columns= ['Std'])
+        mean = mean.join(std)
+        theta = theta.join(mean)
+        theta.to_csv('weights.csv', index = None, header=True)
     except:
         print("Usage: python3 logreg_train.py resources/dataset_train.csv")
         exit (-1)
