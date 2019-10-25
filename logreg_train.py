@@ -27,7 +27,7 @@ def cost_func(theta, X, y):
     return np.mean(final)
 
 # Make a prediction with thetas with a single row
-def predict(row, theta):
+def logistic_func_2(row, theta):
     yhat = 0
     for i in range(len(row)):
         yhat += theta[i] * row[i]
@@ -41,7 +41,7 @@ def grad_stoch(X, y, lr=0.3):
         sum_error = 0
         for index,row in enumerate(X):
             row_list = row.tolist()[0]
-            yhat = predict(row_list, theta)
+            yhat = logistic_func_2(row_list, theta)
             error = y[index] - yhat
             sum_error += error.mean()**2
             for i in range(len(row_list)):
