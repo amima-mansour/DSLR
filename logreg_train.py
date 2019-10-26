@@ -17,14 +17,15 @@ def log_gradient(theta, X, y):
 
 def cost_func(theta, X, y):
     "cost function, J"
-
     log_func_v = logistic_func(theta, X)
+    error = np.sum(np.power((np.ravel(log_func_v) - y),2))
     step1 = y * np.log(log_func_v)
     step2 = (1 - y) * np.log(1 - log_func_v)
+    # A checker
     if np.isnan(step2):
         step2 = 0
     final = -step1 - step2
-    return np.mean(final)
+    return np.mean(final), error
 
 # Make a prediction with thetas with a single row
 def logistic_func_2(row, theta):
@@ -52,12 +53,13 @@ def grad_stoch(X, y, lr=0.3):
 def grad_desc(X, value, lr=5e-05):
     "gradient descent function"
     theta = np.matrix(np.zeros(X.shape[1])) 
-    costs = []
+    costs, errors = [], []
     for i in range(100):
-        cost = cost_func(theta, X, value)
+        cost, error = cost_func(theta, X, value)
         theta = theta - (lr * log_gradient(theta, X, value))
         costs.append(cost)
-    return theta.tolist()[0], costs
+        errors.append(error)
+    return theta.tolist()[0], costs, errors
 
 def scale_data(df):
     return (df - df.mean()) / df.std()
@@ -77,7 +79,7 @@ def logistic_regression(houseName, df,stochastic=False):
     X = np.hstack((np.matrix(np.ones(df.shape[0])).T, df))
     if stochastic == False:
         return grad_desc(X, value)
-    return grad_stoch(X, value), []
+    return grad_stoch(X, value), [], []
 
 
 if __name__ == '__main__':
@@ -96,10 +98,10 @@ if __name__ == '__main__':
         theta_dic = {}
         "Data of Ravenclaw house"
         df = df.dropna()
-        theta_dic['Ravenclaw'], costs_raven = logistic_regression('Ravenclaw', df.copy(), args.sg)
-        theta_dic['Slytherin'], costs_sly = logistic_regression('Slytherin', df.copy(), args.sg)
-        theta_dic['Gryffindor'], costs_gryf = logistic_regression('Gryffindor', df.copy(), args.sg)
-        theta_dic['Hufflepuff'], costs_huff = logistic_regression('Hufflepuff', df.copy(), args.sg)
+        theta_dic['Ravenclaw'], costs_raven, errors_raven = logistic_regression('Ravenclaw', df.copy(), args.sg)
+        theta_dic['Slytherin'], costs_sly, errors_sly = logistic_regression('Slytherin', df.copy(), args.sg)
+        theta_dic['Gryffindor'], costs_gryf, errors_gryf = logistic_regression('Gryffindor', df.copy(), args.sg)
+        theta_dic['Hufflepuff'], costs_huff, errors_huff = logistic_regression('Hufflepuff', df.copy(), args.sg)
         theta = pd.DataFrame.from_dict(theta_dic)
         mean = pd.DataFrame(df.mean().tolist(), columns= ['Mean'])
         std = pd.DataFrame(df.std().tolist(), columns= ['Std'])
@@ -107,13 +109,20 @@ if __name__ == '__main__':
         theta = theta.join(mean)
         theta.to_csv('weights.csv', index = None, header=True)
         if len(costs_raven) > 0:
-            plt.title('Cost Function')
-            plt.plot(costs_raven, color='red', label ='Ravenclaw')
-            plt.plot(costs_sly, color='blue', label='Slytherin')
-            plt.plot(costs_gryf, color='green', label='Gryffindor')
-            plt.plot(costs_huff, color='yellow', label='Hufflepuff')
-            plt.legend()
-            plt.show()
+                fig, axs = plt.subplots(1, 2, figsize=(8,4))
+                axs[0].set_title('Cost Function')
+                axs[0].plot(costs_raven, color='red', label ='Ravenclaw')
+                axs[0,].plot(costs_sly, color='blue', label='Slytherin')
+                axs[0].plot(costs_gryf, color='green', label='Gryffindor')
+                axs[0].plot(costs_huff, color='yellow', label='Hufflepuff')
+                axs[1].set_title('Error Function')
+                axs[1].plot(errors_raven, color='red', label ='Ravenclaw')
+                axs[1].plot(errors_sly, color='blue', label='Slytherin')
+                axs[1].plot(errors_gryf, color='green', label='Gryffindor')
+                axs[1].plot(errors_huff, color='yellow', label='Hufflepuff')
+                axs[1].legend()
+                axs[0].legend()
+                plt.show()
     except:
         print("Usage: python3 logreg_train.py resources/dataset_train.csv")
         exit (-1)
